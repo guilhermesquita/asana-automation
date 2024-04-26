@@ -15,7 +15,7 @@ import requests
 offset =  ''
 data_task=[]
 
-url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=2&{offset}'.format(offset=offset)
+url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=100&{offset}'.format(offset=offset)
 headers = {
     'Authorization': 'Bearer 2/1202126083545971/1207182145066539:9de56ef74e356640cc82f4a05c7fd7b7',
     'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ headers = {
 response = requests.get(url_base, headers=headers)
 data = response.json()
 
-while True:
+while (data['next_page']) == True:
     # print(data['next_page']['offset'])
     url = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=100&{offset}'.format(offset=offset)
     response = requests.get(url, headers=headers)
