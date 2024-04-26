@@ -12,22 +12,28 @@
 
 import requests
 
-url = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=2'
+offset =  ''
+data_task=[]
 
+url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=2&{offset}'.format(offset=offset)
 headers = {
     'Authorization': 'Bearer 2/1202126083545971/1207182145066539:9de56ef74e356640cc82f4a05c7fd7b7',
     'Content-Type': 'application/json'
 }
 
-data_task=[]
 
-response = requests.get(url, headers=headers)
+response = requests.get(url_base, headers=headers)
+data = response.json()
 
-if response.status_code == 200:
-    # Convertendo a resposta para JSON
+while True:
+    # print(data['next_page']['offset'])
+    url = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=100&{offset}'.format(offset=offset)
+    response = requests.get(url, headers=headers)
     data = response.json()
-
-    # Acessando os dados e imprimindo na tela
+    
+    if data['next_page']['offset']:
+        offset = 'offset=' + data['next_page']['offset']
+        
     tasks = data.get('data')
     if tasks:
         for task in tasks:
@@ -50,15 +56,15 @@ if response.status_code == 200:
                         if 'Processo: ' in story['text']:
                             processonumero = story['text'].split('Processo: ')[1].split()[0]
                             # print(processonumero)
-            
-            print(processonumero)
-
-            envolved = data_json['tags'][2]['name']
-            objective = data_json['tags'][1]['name'] 
+            if 'tags' in data_json and len(data_json['tags']) > 2 and data_json['tags'][2] is not None and 'name' in data_json['tags'][2]:
+                envolved = data_json['tags'][2]['name']
+            if 'tags' in data_json and len(data_json['tags']) > 2 and data_json['tags'][1] is not None and 'name' in data_json['tags'][1]:
+                objective = data_json['tags'][1]['name'] 
             data_task.append({'name': data_json['name'], 'numero': processonumero, 'envolvido': envolved, 'objeto': objective})
-        
+
         print(data_task)
+    
     else:
-        print('Nenhuma tarefa encontrada.')
-else:
-    print('Falha na requisição. Código de status:', response.status_code)
+        print('Falha na requisição. Código de status:', response.status_code)
+# else:
+#     print('Falha na requisição. Código de status:', response.status_code)
