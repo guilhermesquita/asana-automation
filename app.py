@@ -76,6 +76,7 @@ while True:
         else:
             break
 
+
     else:
         print('Não há mais tarefas.')
         break
@@ -84,7 +85,7 @@ print(data_task)
 def preencher_planilha(data_task, planilha_excel):
     wb = openpyxl.load_workbook(planilha_excel)
     ws = wb['Processos  - Preenchimento']
-    ws2 = wb['Contatos  - Preenchimento']
+    ws2 = wb['Contatos - Preenchimento']
 
     for row, task_data in enumerate(data_task, start=3):  
         ws.cell(row=row, column=2, value=task_data.get('name', ''))  
@@ -99,7 +100,7 @@ def preencher_planilha(data_task, planilha_excel):
         ws.cell(row=row, column=23, value=task_data.get('objective', ''))  
         ws.cell(row=row, column=30, value='contato@barbosaluan.com')   
 
-    for row, task_data in enumerate(data_task, start=2):  
+    for row, task_data in enumerate(data_task, start=3):  
         ws2.cell(row=row, column=1, value=task_data.get('name', ''))  
         ws2.cell(row=row, column=5, value=task_data.get('telephone', ''))    
 
@@ -107,6 +108,6 @@ def preencher_planilha(data_task, planilha_excel):
     wb.save(planilha_excel)
 
 planilha_existente = 'Migracao.xlsx'
-teste = [{"name": 'Wesley', "age": 13}, {"name": 'Luiz', "age": 20}, {"name": 'Gui', "age": 19}]
+# teste = [{"name": 'Wesley', "age": 13}, {"name": 'Luiz', "age": 20}, {"name": 'Gui', "age": 19}]
 preencher_planilha(data_task, planilha_existente)
 print("Informações já exportadas")
