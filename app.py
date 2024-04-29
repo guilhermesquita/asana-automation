@@ -1,13 +1,20 @@
 import requests
 import openpyxl
+import os
+from dotenv import load_dotenv
 
 offset = ''
 data_task = []
 
-url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=10&{offset}'.format(
+load_dotenv()
+
+asana_api_key = os.getenv("ASANA_API_KEY")
+asana_api_url = os.getenv("ASANA_API_URL")
+
+url_base = asana_api_url + 'sections/1201422389995890/tasks?opt_fields=&limit=10&{offset}'.format(
     offset=offset)
 headers = {
-    'Authorization': 'Bearer 2/1202126083545971/1207182145066539:9de56ef74e356640cc82f4a05c7fd7b7',
+    'Authorization': 'Bearer ' + asana_api_key,
     'Content-Type': 'application/json'
 }
 
