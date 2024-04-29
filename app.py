@@ -4,7 +4,7 @@ import openpyxl
 offset = ''
 data_task = []
 
-url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=3&{offset}'.format(
+url_base = 'https://app.asana.com/api/1.0/sections/1201422389995890/tasks?opt_fields=&limit=10&{offset}'.format(
     offset=offset)
 headers = {
     'Authorization': 'Bearer 2/1202126083545971/1207182145066539:9de56ef74e356640cc82f4a05c7fd7b7',
@@ -20,6 +20,8 @@ def get_task_data(url, headers):
         print('Falha na requisição. Código de status:', response.status_code)
         return None
 
+# cont = 1
+# while cont < 2:
 while True:
     data = get_task_data(url_base, headers)
     if not data:
@@ -52,21 +54,40 @@ while True:
 
             data_story = story_data.get('data')
 
+            processnumber = None
+
             for story in data_story:
-                if story['type'] == 'comment' and 'Processo: ' in story['text']:
-                    processnumber = story['text'].split('Processo: ')[1].split()[0]
+                if processnumber is not None:
                     break
-            else:
-                processnumber = None
+    
+                text = story['text'].lower()
+                keywords = ['processo:', 'processo ', 'número do processo:', 'número do processo ', 'processo nº:', 'processo nº ']
+    
+                for keyword in keywords:
+                    if keyword in text:
+                        processnumber = text.split(keyword)[1].split()[0]
+                        break
+
+            atuations = ['Voo cancelado', 'Bagagem extraviada']
 
             involved = objective = None
-            if 'tags' in data_json and len(data_json['tags']) > 2 and data_json['tags'][2] is not None and 'name' in data_json['tags'][2]:
-                involved = data_json['tags'][2]['name']
-            if 'tags' in data_json and len(data_json['tags']) > 2 and data_json['tags'][1] is not None and 'name' in data_json['tags'][1]:
-                objective = data_json['tags'][1]['name'] 
+            for atuation in atuations:
+                if len(data_json['tags']) > 2:
+                    if atuation.lower() == data_json['tags'][1]['name'].lower():
+                        objective = data_json['tags'][1]['name']
+                        involved = data_json['tags'][2]['name']
+                if len(data_json['tags']) > 2: 
+                    if atuation.lower() == data_json['tags'][2]['name'].lower():
+                        objective = data_json['tags'][2]['name']
+                        involved = data_json['tags'][1]['name']
+                if len(data_json['tags']) == 2:
+                    if atuation.lower() == data_json['tags'][1]['name'].lower():
+                        objective = data_json['tags'][1]['name']
+                    else:
+                        involved = data_json['tags'][1]['name']
 
             data_task.append({'name': data_json['name'], 'number': processnumber, 'involved': involved,
-                              'objeto': objective,'telephone': number_telephone})
+                              'objective': objective,'telephone': number_telephone})
             print(data_task)
 
         if data.get('next_page'):
@@ -76,7 +97,7 @@ while True:
         else:
             break
 
-
+        # cont += 1
     else:
         print('Não há mais tarefas.')
         break
@@ -108,6 +129,6 @@ def preencher_planilha(data_task, planilha_excel):
     wb.save(planilha_excel)
 
 planilha_existente = 'Migracao.xlsx'
-# teste = [{"name": 'Wesley', "age": 13}, {"name": 'Luiz', "age": 20}, {"name": 'Gui', "age": 19}]
+teste = [{"name": 'Wesley', "age": 13}, {"name": 'Luiz', "age": 20}, {"name": 'Gui', "age": 19}]
 preencher_planilha(data_task, planilha_existente)
 print("Informações já exportadas")
