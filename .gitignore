@@ -1,5 +1,6 @@
+.env
 node_modules
 build
 * ./db
+*.xlsm
 *.xlsx
-.env
