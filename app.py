@@ -10,6 +10,7 @@ load_dotenv()
 
 asana_api_key = os.getenv("ASANA_API_KEY")
 asana_api_url = os.getenv("ASANA_API_URL")
+arquivo_xlsx = os.getenv("PLANILHA_XLSX")
 
 url_base = asana_api_url + 'sections/1201422389995890/tasks?opt_fields=&limit=10&{offset}'.format(
     offset=offset)
@@ -27,8 +28,6 @@ def get_task_data(url, headers):
         print('Falha na requisição. Código de status:', response.status_code)
         return None
 
-# cont = 1
-# while cont < 2:
 while True:
     data = get_task_data(url_base, headers)
     if not data:
@@ -104,7 +103,6 @@ while True:
         else:
             break
 
-        # cont += 1
     else:
         print('Não há mais tarefas.')
         break
@@ -135,7 +133,6 @@ def preencher_planilha(data_task, planilha_excel):
 
     wb.save(planilha_excel)
 
-planilha_existente = 'Migracao.xlsx'
-teste = [{"name": 'Wesley', "age": 13}, {"name": 'Luiz', "age": 20}, {"name": 'Gui', "age": 19}]
+planilha_existente = 'arquivo_xlsx'
 preencher_planilha(data_task, planilha_existente)
 print("Informações já exportadas")
